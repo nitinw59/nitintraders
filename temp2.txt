@@ -1,0 +1,121 @@
+<?php
+  include("mysqlconnectdb.php");
+ 
+   
+  $action=$_POST["action"];
+ 
+  if($action=="fetchcustomerdetail"){
+	 $customercompanyname=$_POST["customercompanyname"];
+	 $sqlquery="Select * from customers_tbl where COMPANY_NAME='".$customercompanyname."'";
+     $show=mysqli_query($dbhandle,$sqlquery);
+ 
+     while($row=mysqli_fetch_array($show)){
+        $customerdetail['customer_id']=$row['customer_id'];
+		$customerdetail['FNAME']=$row['FNAME'];
+		$customerdetail['LNAME']=$row['LNAME'];
+		$customerdetail['COMPANY_NAME']=$row['COMPANY_NAME'];
+		$customerdetail['EMAIL']=$row['EMAIL'];
+		$customerdetail['GSTTREATMENT']=$row['GSTTREATMENT'];
+		$customerdetail['GSTN']=$row['GSTN'];
+		$customerdetail['ADDRESS']=$row['ADDRESS'];
+		$customerdetail['CITY']=$row['CITY'];
+		$customerdetail['STATE']=$row['STATE'];
+		$customerdetail['ZIP']=$row['ZIP'];
+		
+		
+		echo json_encode($customerdetail);
+		
+		
+		
+		
+     }
+  }
+  else if($action=="getitemdetail"){
+    $item_id=$_POST["item_id"];
+    $sqlquery="Select items_id,DESCRIPTION,QUANTITY_RECEIVED,SIZE,RATE,TAX_RATE from items_tbl where items_id=".$item_id;
+	$show=mysqli_query($dbhandle,$sqlquery);
+	
+	if($show=mysqli_query($dbhandle,$sqlquery)){
+	while($row=mysqli_fetch_array($show)){
+		
+        
+		$itemdetail['DESCRIPTION']=$row['DESCRIPTION'];
+		$itemdetail['QUANTITY_RECEIVED']=$row['QUANTITY_RECEIVED'];
+		$itemdetail['SIZE']=$row['SIZE'];
+		$itemdetail['RATE']=$row['RATE'];
+		$itemdetail['TAX_RATE']=$row['TAX_RATE'];
+		
+		echo json_encode($itemdetail);
+     }
+	}
+	 else{
+		 echo "no data";
+		 
+  }
+  }else if($action=="insertBill"){
+    $customer_id=$_POST["customer_id"];
+	$billdate=$_POST["billdate"];
+	$duedate=$_POST["duedate"];
+	$total_amount=$_POST["total_amount"];
+	
+    $sqlquery="INSERT INTO BILLS_TBL (DATE,DUE_DATE,customer_id,total_amount,taxable_amount)VALUES ('".$billdate."','".$duedate."',".$customer_id.",".$total_amount.",".$total_amount.")";                                                           
+	
+	$show=mysqli_query($dbhandle,$sqlquery);
+	
+	if($show==1){
+		$show=mysqli_query($dbhandle,"select * from bills_tbl ORDER BY BILL_ID DESC;");
+		$row=mysqli_fetch_array($show);
+		echo $row["BILL_ID"];
+		
+	
+	}else{
+	
+		echo "-1";
+	}
+	
+	
+	
+	
+  }else if($action=="insertBillItems"){
+    $bill_items_row=$_POST["itemsrow"];
+	$bill_id=$_POST["bill_id"];
+	
+	$bill_items_row_array=explode("||||",$bill_items_row);
+	for($i=0;$i< (sizeof($bill_items_row_array)-1);$i++){
+			$bill_item_col_array=explode("||",$bill_items_row_array[$i]);
+				
+				$item_id=$bill_item_col_array[0];
+				$item_quantity=$bill_item_col_array[1];
+				$item_rate=$bill_item_col_array[2];
+				
+				$sqlquery="INSERT INTO BILL_ITEMS_TBL (BILL_ID,ITEMS_ID,QUANTITY,RATE) VALUES (".$bill_id.",".$item_id.",".$item_quantity.",".$item_rate.")";
+				$show=mysqli_query($dbhandle,$sqlquery);
+				$sqlquery="UPDATE ITEMS_TBL SET QUANTITY_RECEIVED=QUANTITY_RECEIVED-".$item_quantity." WHERE ITEMS_ID=".$item_id;
+				$show=mysqli_query($dbhandle,$sqlquery);
+				echo $sqlquery;
+				
+				
+	}
+	
+	
+	
+  }else if($action=="insertBillTaxDetails"){
+	$bill_id=$_POST["bill_id"];
+	$CGST=$_POST["CGST"];
+	$SGST=$_POST["SGST"];
+	$IGST=$_POST["IGST"];
+				
+				$sqlquery="INSERT INTO TAX_DETAILS_TBL (BILL_ID,HSN,CGST_RATE,CGST,SGST_RATE,SGST,IGST_RATE,IGST) VALUES(1,'HSN',2.5,500,2.5,500,5,1000)";
+
+				$show=mysqli_query($dbhandle,$sqlquery);
+				$sqlquery="UPDATE ITEMS_TBL SET QUANTITY_RECEIVED=QUANTITY_RECEIVED-".$item_quantity." WHERE ITEMS_ID=".$item_id;
+				$show=mysqli_query($dbhandle,$sqlquery);
+				echo $sqlquery;
+				
+				
+	}
+	
+	
+	
+  }
+?>

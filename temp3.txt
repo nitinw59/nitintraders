@@ -1,0 +1,403 @@
+
+	var companydetails = {company_name:"Mukesh Garments", address:"gangaram", state:"Maharashtra"}; 
+	
+	
+	var customerdetails;
+	var items_list;
+	var total_amount=0;
+	
+	var today = new Date();
+	
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+	
+	var billdate=yyyy+"-"+mm+"-"+dd+"";
+	today.setDate(today.getDate() + 60);
+	
+	dd = today.getDate();
+	mm = today.getMonth()+1; //January is 0!
+	yyyy = today.getFullYear();
+	var duedate=yyyy+"-"+mm+"-"+dd+"";
+	
+			$(document).ready(function() {
+				
+				var buyernameArray = <?php echo json_encode($customercompanynames); ?>;
+				$("#buyername").select2({
+				  data: buyernameArray
+				});
+				
+				
+				
+				
+				$('#item_id').on("keypress", function(e) {
+					if (e.keyCode == 13) {
+						
+						var item_id=$("#item_id").val();
+						$.ajax({
+                        type:"post",
+                        url:"newInvoiceAction.php",
+                        data:"item_id="+item_id+"&action=getitemdetail",
+                        success:function(data){
+							try{
+							
+							var itemdetail = JSON.parse(data);
+							$("#description").val((itemdetail["DESCRIPTION"]+" "+itemdetail["SIZE"]));
+							$("#rate").val(itemdetail["RATE"]);
+							
+							$("#quantity").val('');
+							
+							$("#item_availability").html(itemdetail["QUANTITY_RECEIVED"]);
+							}catch(e){
+								
+							$("#description").val('');
+							$("#rate").val('');
+							
+							$("#quantity").val('');
+							$("#item_id").val('');
+							
+								
+							$("#item_availability").html("Item not available");
+							
+							}
+							
+                        }
+                     });											
+					return false; // prevent the button click from happening
+					}
+				});
+				
+				$('#rate').on("keypress", function(e) {
+					if (e.keyCode == 13) {
+						var item_id=$("#item_id").val();
+						var description=$("#description").val();
+						var rate=$("#rate").val();
+						var taxrate=5;
+						var quantity=$("#quantity").val();
+						var hsn="HSN";
+						var markup = "<tr><td colspan='2'><input type='checkbox' name='record'></td><td><center>" + item_id + "</center></td><td><center>" + description + "</center></td><td><center>" + quantity + "</center></td><td><center>" + rate + "</center></td><td><center>" + ((rate*quantity)) + "</center></td></tr>";
+						var samestate;
+						
+						if($("#customerstate").html()==$("#companystate").html()){
+						samestate=1;
+						}else{
+						samestate=-1;
+						}
+						
+						
+						
+						
+						var quantity_available=parseInt($("#item_availability").html());
+						if(quantity_available>=quantity){
+						$("#items_table_body").append(markup);
+						total_amount += (rate*quantity);
+						
+						
+						
+						try{
+						$.ajax({
+                        type:"post",
+                        url:"updateInvoiceAction.php",
+                        data:"item_id="+item_id+"&bill_id="+$.getUrlVar('bill_id')+"&quantity="+quantity+"&rate="+rate+"&action=addBillItem",
+                        success:function(data){
+							
+							try{
+								
+							if(data>-1){
+							alert ("updated Successfuly.");
+							
+							}else{
+								
+							alert("Failed To Update");
+							}
+							}catch(e){
+							$("#item_availability").html("Item not available");
+							
+							}
+							
+                        }
+                     });
+						
+						}catch(e){
+							alert(e);
+							
+							}
+						
+						
+						
+						
+						
+						
+						try{
+						
+						var taxdetailshtml="<tr><th>sr</th><th>HSN</th><th>Taxable Amount</th>";
+						if(samestate>-1){
+						taxdetailshtml += "<th>CGST</th><th>SGST</th></tr>";
+						taxdetailshtml +="<tr><td>1.</td><td>HSN</td><td>"+total_amount+"</td><td>"+(total_amount*(2.5/100))+"\n@2.5%</td><td>"+(total_amount*(2.5/100))+"\n@2.5%</td></tr>";
+						
+						}else{
+						taxdetailshtml += "<th>IGST</th></tr>";
+						taxdetailshtml +="<tr><td>1.</td><td>HSN</td><td>"+total_amount+"</td><td>"+(total_amount*(5/100))+"\n@5%</td></tr>";
+						
+						}
+						$("#taxdetailtable").html(taxdetailshtml);
+						
+						$("#item_id").val('');
+							
+						$("#description").attr("value","");
+						$("#rate").val('');
+							
+						$("#quantity").val('');
+							
+						$("#item_id").focus();
+						
+						
+						
+						}catch(e){
+						alert(e);
+						}
+						
+						
+						
+						
+						
+					return false; // prevent the button click from happening
+					
+					}else{
+					alert ("Total Available Quantity : "+quantity_available);
+					}
+					
+					
+					
+					}
+				});
+				
+				
+				
+				$(".delete-row").click(function(){
+				
+				$("#items_table_body").find('input[name="record"]').each(function(){
+
+                if($(this).is(":checked")){
+
+                    $(this).parents("tr").remove();
+					
+					$(this).parents("tr").find("td").each(function (colIndex, c) {
+					if(colIndex==1)	{
+					$.ajax({
+                        type:"post",
+                        url:"updateInvoiceAction.php",
+                        data:"item_id="+c.textContent+"&bill_id="+$.getUrlVar('bill_id')+"&action=removeBillItem",
+                        success:function(data){
+							try{
+								
+							if(data>-1){
+							alert ("updated Successfuly.");
+							
+							}else{
+								
+							alert("Failed To Update");
+							}
+							}catch(e){
+							$("#item_availability").html("Item not available");
+							
+							}
+							
+                        }
+                     });
+					
+					
+					}
+					});
+
+						
+               }
+
+            });
+				
+				
+				
+				
+					
+
+        return false; 
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		$(".generateBill").click(function(){
+
+		
+			
+							window.location.replace("showInvoice.php?bill_id="+$.getUrlVar('bill_id'));
+
+							
+
+        return false; 
+		});
+
+
+				
+				$("#transportcheck").click(function(){
+					
+					
+					if($(this).is(":checked")){
+					$("#TransportDetail").show();
+					}
+					else{
+						$("#TransportDetail").hide();
+					}
+					
+					
+				});
+				
+				
+				
+				$("#billdate").change(function(){
+                    				
+					 billdate=$("#billdate").val();
+					
+										
+               });
+
+				
+				
+				$("#buyername").change(function(){
+					
+                     var customercompanyname=$("#buyername").val();
+					
+					 
+					 
+                     $.ajax({
+                        type:"post",
+                        url:"newInvoiceAction.php",
+                        data:"customercompanyname="+customercompanyname+"&action=fetchcustomerdetail",
+                        success:function(data){
+							customerdetails = JSON.parse(data);
+							
+							$("#company_name").html("COMPANY NAME: "+customerdetails["COMPANY_NAME"]);
+							$("#customername").html(" BUYER NAME: "+customerdetails["FNAME"] +" "+ customerdetails["LNAME"]);
+							$("#address").html("ADDRESS : "+customerdetails["ADDRESS"]);
+							$("#city").html("CITY : "+customerdetails["CITY"]);
+							$("#customerstate").html("STATE : "+customerdetails["STATE"]);
+							$("#gsttreatment").html("GST TREATMENT: "+customerdetails["GSTTREATMENT"]);
+							$("#gstn").html("GSTN: "+customerdetails["GSTN"]);
+							
+							
+							
+							
+                        }
+                     });
+               });
+
+			
+
+
+			
+			$("#updatetransportbutton").click(function(){
+				
+				
+				alert($.getUrlVar('bill_id'));
+				
+				var transportname=$("#transportname").val();
+				var transportparcels=$("#transportparcels").val();
+				
+				
+				$.ajax({
+                        type:"post",
+                        url:"updateInvoiceAction.php",
+                        data:"transportname="+transportname+"&transportparcels="+transportparcels+"&bill_id="+$.getUrlVar('bill_id')+"&action=updateTransport",
+                        success:function(data){
+							try{
+							alert (data);
+							if(data>-1){
+							alert ("updated Successfuly.123");
+							
+							}else{
+								
+							alert("Failed To Update");
+							}
+							}catch(e){
+							$("#item_availability").html("Item not available");
+							
+							}
+							
+                        }
+                     });	
+
+        return false; 
+		});
+			
+			
+			
+			
+			
+
+		
+		
+		
+		
+		
+		$("#updatecustomerbutton").click(function(){
+				
+				
+				alert($.getUrlVar('bill_id'));
+				$.ajax({
+                        type:"post",
+                        url:"updateInvoiceAction.php",
+                        data:"customer_id="+customerdetails['customer_id']+"&bill_id="+$.getUrlVar('bill_id')+"&action=updateCustomer",
+                        success:function(data){
+							try{
+								
+							if(data>-1){
+							alert ("updated Successfuly.");
+							
+							}else{
+								
+							alert("Failed To Update");
+							}
+							}catch(e){
+							$("#item_availability").html("Item not available");
+							
+							}
+							
+                        }
+                     });	
+
+        return false; 
+		});
+		
+		
+
+			
+				
+			});
+			
+			
+			
+			
+			$.extend({
+			getUrlVars: function(){
+			var vars = [], hash;
+			var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+			for(var i = 0; i < hashes.length; i++)
+				{
+				hash = hashes[i].split('=');
+				vars.push(hash[0]);
+				vars[hash[0]] = hash[1];
+				}
+			return vars;
+			},
+			getUrlVar: function(name){
+			return $.getUrlVars()[name];
+			}
+			});
