@@ -58,7 +58,7 @@
     $brand=$_POST["brand"];
     $itemStyle=$_POST["itemStyle"];
     $size=$_POST["size"];
-    $sqlquery="Select * from GENERALIZED_ITEMS where BRAND='$brand' and ITEM_STYLE='$itemStyle' and  SIZE='$size'";
+    $sqlquery="Select * from generalized_items where BRAND='$brand' and ITEM_STYLE='$itemStyle' and  SIZE='$size'";
 	
 	
 	if($show=mysqli_query($dbhandle_stockmanager,$sqlquery)){
@@ -81,7 +81,7 @@
   }
   }else if($action=="getBrandList"){
     
-	$sql = "SELECT DISTINCT BRAND FROM GENERALIZED_ITEMS WHERE AVAIALABLE_QTY > 0 ";
+	$sql = "SELECT DISTINCT BRAND FROM generalized_items WHERE AVAIALABLE_QTY > 0 ";
 	$brands = array();
 	if($result = mysqli_query($dbhandle_stockmanager,$sql) ){
 		$count=0;
@@ -96,7 +96,7 @@
   
 	}else if($action=="getStyleList"){
 	$brand=$_POST["brand"];
-	$sql = "SELECT DISTINCT ITEM_STYLE FROM GENERALIZED_ITEMS WHERE AVAIALABLE_QTY > 0 and brand = '$brand'";
+	$sql = "SELECT DISTINCT ITEM_STYLE FROM generalized_items WHERE AVAIALABLE_QTY > 0 and brand = '$brand'";
 	$styles = array();
 	if($result = mysqli_query($dbhandle_stockmanager,$sql) ){
 		$count=0;
@@ -112,7 +112,7 @@
 }else if($action=="getSizeList"){
 	$brand=$_POST["brand"];
 	$style=$_POST["style"];
-	$sql = "SELECT  SIZE  FROM GENERALIZED_ITEMS WHERE AVAIALABLE_QTY > 0 and brand = '$brand' and ITEM_STYLE = '$style'";
+	$sql = "SELECT  SIZE  FROM generalized_items WHERE AVAIALABLE_QTY > 0 and brand = '$brand' and ITEM_STYLE = '$style'";
 	$sizes = array();
 	if($result = mysqli_query($dbhandle_stockmanager,$sql) ){
 		$count=0;
@@ -133,7 +133,7 @@
 	$transportparcels=$_POST["transportparcels"];
 	
 	
-    $sqlquery="INSERT INTO BILLS_TBL (DATE,DUE_DATE,customer_id,total_amount,taxable_amount,transport_name,transport_parcels)VALUES ('".$billdate."','".$duedate."',".$customer_id.",0,0,'','')";                                                           
+    $sqlquery="INSERT INTO bills_tbl (DATE,DUE_DATE,customer_id,total_amount,taxable_amount,transport_name,transport_parcels)VALUES ('".$billdate."','".$duedate."',".$customer_id.",0,0,'','')";                                                           
 	
 	$show=mysqli_query($dbhandle,$sqlquery);
 	
@@ -143,7 +143,7 @@
 		$show=mysqli_query($dbhandle,"select * from bills_tbl ORDER BY BILL_ID DESC;");
 		$row=mysqli_fetch_array($show);
 		
-		$sqlquery="INSERT INTO TAX_DETAILS_TBL (BILL_ID,HSN,CGST_RATE,CGST,SGST_RATE,SGST,IGST_RATE,IGST) VALUES(".$row["BILL_ID"].",'HSN',2.5,0,2.5,0,5,0)";
+		$sqlquery="INSERT INTO tax_details_tbl (BILL_ID,HSN,CGST_RATE,CGST,SGST_RATE,SGST,IGST_RATE,IGST) VALUES(".$row["BILL_ID"].",'HSN',2.5,0,2.5,0,5,0)";
 		$show=mysqli_query($dbhandle,$sqlquery);
 		
 		$sqlquery="INSERT INTO transport_tbl (bill_id,DATE,transport_name,transport_parcels,LR)VALUES ('".$row["BILL_ID"]."','','".$transportname."',".$transportparcels.",'')";                                                           
@@ -176,7 +176,7 @@
 				$item_rate=$bill_item_col_array[3];
 				$item_description=$bill_item_col_array[1];
 				
-				$sqlquery="INSERT INTO BILL_ITEMS_TBL (BILL_ID,ITEMS_ID,QUANTITY,RATE,description)
+				$sqlquery="INSERT INTO bill_items_tbl (BILL_ID,ITEMS_ID,QUANTITY,RATE,description)
 							 VALUES (".$bill_id.",".$item_id.",".$item_quantity.",".$item_rate.",'".$item_description."')";
 				echo $sqlquery;
 				$show=mysqli_query($dbhandle,$sqlquery);

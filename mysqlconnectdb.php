@@ -1,18 +1,18 @@
 <?php
-$username = "root";
+$username = "";
 $password = "";
 $hostname = "localhost";
-$dbname= "shopweb";
+$dbname= "";
 
 //connection to the database
 $dbhandle = mysqli_connect($hostname, $username, $password,$dbname) 
   or die(mysql_error());
 
 
-  $username = "root";
+  $username = "";
   $password = "";
   $hostname = "localhost";
-  $dbname= "stockmanager";
+  $dbname= "";
   
   //connection to the database
   $dbhandle_stockmanager = mysqli_connect($hostname, $username, $password,$dbname) 

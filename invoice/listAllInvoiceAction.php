@@ -9,7 +9,7 @@
 	$from_date=$_POST["from_date"];
 	$to_date=$_POST["to_date"];
 	  
-	$sql = "SELECT B.BILL_ID, DATE, COMPANY_NAME,GSTN, TOTAL_AMOUNT, CGST, SGST, IGST FROM bills_tbl B,customers_tbl C, tax_details_tbl T WHERE B.BILL_ID=T.BILL_ID AND B.CUSTOMER_ID=C.CUSTOMER_ID AND b.DATE>='$from_date' AND b.DATE<='$to_date' ORDER BY COMPANY_NAME DESC";
+	$sql = "SELECT B.BILL_ID, DATE, COMPANY_NAME,GSTN, TOTAL_AMOUNT, CGST, SGST, IGST FROM bills_tbl B,customers_tbl C, tax_details_tbl T WHERE B.BILL_ID=T.BILL_ID AND B.CUSTOMER_ID=C.CUSTOMER_ID AND B.DATE>='$from_date' AND B.DATE<='$to_date' ORDER BY COMPANY_NAME DESC";
 	$show=mysqli_query($dbhandle,$sql);
 	
 	$bills_list;

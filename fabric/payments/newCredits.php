@@ -6,7 +6,7 @@
 	include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/index.php");
 	
 	
-	$sql = "SELECT COMPANY_NAME FROM FABRIC_MERCHANTS_TBL";
+	$sql = "SELECT COMPANY_NAME FROM fabric_merchants_tbl";
 	$customercompanynames = array();
 	if($result = mysqli_query($dbhandle,$sql) ){
 		$count=0;
@@ -134,7 +134,7 @@
     
 $current_date=date('Y-m-d', time());
 	?>
-    
+    <h3>NEW DEBIT</h3>
 	<div class="buyerdetailst" id="buyerdetailst">
 	
 	

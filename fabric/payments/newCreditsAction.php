@@ -8,7 +8,7 @@
  
   if($action=="fetchcustomerdetail"){
 	 $customercompanyname=$_POST["customercompanyname"];
-	 $sqlquery="Select * from FABRIC_MERCHANTS_TBL where COMPANY_NAME='".$customercompanyname."'";
+	 $sqlquery="Select * from fabric_merchants_tbl where COMPANY_NAME='".$customercompanyname."'";
      $show=mysqli_query($dbhandle,$sqlquery);
  
      while($row=mysqli_fetch_array($show)){
@@ -32,7 +32,7 @@
   }
   else if($action=="fetchbilldetails"){
 	 $bill_id=$_POST["bill_id"];
-	 $sqlquery="Select b.bill_id,b.TOTAL_AMOUNT,B.DATE,T.CGST,T.SGST,T.IGST from bills_tbl B, TAX_DETAILS_TBL T where B.BILL_ID=T.BILL_ID AND b.bill_id=".$bill_id;
+	 $sqlquery="Select b.bill_id,b.TOTAL_AMOUNT,b.DATE,t.CGST,t.SGST,t.IGST from bills_tbl b, TAX_DETAILS_TBL t where b.BILL_ID=t.BILL_ID AND b.bill_id=".$bill_id;
      $show=mysqli_query($dbhandle,$sqlquery);
  
      while($row=mysqli_fetch_array($show)){
@@ -67,7 +67,7 @@
 	$from_date=$_POST["from_date"];
 	$to_date=$_POST["to_date"];
 	  
-	 $sqlquery="SELECT p.date,p.amount,p.DESCRIPTION,p.BILL_ID FROM payments_tbl P, bills_tbl B, customers_tbl C WHERE P.BILL_ID=B.BILL_ID AND B.customer_id=C.customer_id AND C.COMPANY_NAME='".$company_name."' AND P.DATE>='".$from_date."' AND P.DATE<='".$to_date."'";
+	 $sqlquery="SELECT p.date,p.amount,p.DESCRIPTION,p.BILL_ID FROM payments_tbl p, bills_tbl b, customers_tbl c WHERE p.BILL_ID=b.BILL_ID AND b.customer_id=c.customer_id AND c.COMPANY_NAME='".$company_name."' AND p.DATE>='".$from_date."' AND p.DATE<='".$to_date."'";
      $show=mysqli_query($dbhandle,$sqlquery);
  
 	$payments_list;

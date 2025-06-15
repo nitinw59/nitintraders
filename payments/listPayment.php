@@ -70,17 +70,14 @@
                         url:"listPaymentAction.php",
                         data:"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date+"&action=listPayment",
                         success:function(data){
-							alert(data);
-						$("#paymentdetail").show();alert(4);
-						var payments_list = JSON.parse(data);alert(2);
+							
+						$("#paymentdetail").show();
+						var payments_list = JSON.parse(data);
 						$.each(payments_list, function( index, payment ) {
 							var markup= "<tr><td><center>"+payment["date"]+"</center></td><td><center>"+payment["amount"]+"</center></td><td><center>"+payment["DESCRIPTION"]+"</center></td><td><center><button class='delete' value='"+payment["credits_id"]+"'>delete</button></center></td></tr>"
-							alert(1);
-							
+														
 							$("#payments_tbl").append(markup);
-						});alert(3);
-						var markup= "<tr><td></td><td></td><td></td><td ><center><button class='print'>Print</button></center></td></tr>"
-						$("#payments_tbl").append(markup);
+						});
 										
                         }
                     });

@@ -12,9 +12,9 @@
 	
 	
 	
-	 $sqlquery = "SELECT B.BILL_ID, DATE, COMPANY_NAME,GSTN, TOTAL_AMOUNT, CGST, SGST, IGST,(select GROUP_CONCAT(bi.quantity) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'ITEM_QUANTITY'  ,
+	 $sqlquery = "SELECT b.BILL_ID, DATE, COMPANY_NAME,GSTN, TOTAL_AMOUNT, CGST, SGST, IGST,(select GROUP_CONCAT(bi.quantity) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'ITEM_QUANTITY'  ,
 			(select GROUP_CONCAT(bi.rate) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'ITEM_RATE'  
-			FROM bills_tbl B,customers_tbl C, tax_details_tbl T WHERE B.BILL_ID=T.BILL_ID AND B.CUSTOMER_ID=C.CUSTOMER_ID AND b.DATE>='$from_date' AND b.DATE<='$to_date' ORDER BY COMPANY_NAME DESC";
+			FROM bills_tbl b,customers_tbl c, tax_details_tbl t WHERE b.BILL_ID=t.BILL_ID AND b.CUSTOMER_ID=c.CUSTOMER_ID AND b.DATE>='$from_date' AND b.DATE<='$to_date' ORDER BY COMPANY_NAME DESC";
 			$show=mysqli_query($dbhandle,$sqlquery);
 	
 		echo "<table style='width:80%'  align=center><center>";

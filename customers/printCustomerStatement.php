@@ -9,7 +9,7 @@
 	$to_date=$_GET["to_date"];
 	
 	
-	$sqlquery="select SUM(B.TOTAL_AMOUNT+T.CGST+T.SGST+T.IGST) AS TOTALAMOUNT FROM bills_tbl B, tax_details_tbl T, customers_tbl C WHERE B.BILL_ID=T.BILL_ID AND B.customer_id=C.customer_id AND C.COMPANY_NAME='".$company_name."'  AND b.DATE<'".$from_date."' order by  b.BILL_ID desc";
+	$sqlquery="select SUM(B.TOTAL_AMOUNT+T.CGST+T.SGST+T.IGST) AS TOTALAMOUNT FROM bills_tbl B, tax_details_tbl T, customers_tbl C WHERE B.BILL_ID=T.BILL_ID AND B.customer_id=C.customer_id AND C.COMPANY_NAME='".$company_name."'  AND B.DATE<'".$from_date."' order by  B.BILL_ID desc";
     $show=mysqli_query($dbhandle,$sqlquery);
 	$row=mysqli_fetch_array($show);
 	$old_bill_amount=$row['TOTALAMOUNT'];
@@ -36,9 +36,9 @@
 	
 	  
 	$sqlquery="select 
-			B.BILL_ID as 'BILL ID',
-			B.DATE as 'DATE',
-			(B.TOTAL_AMOUNT+T.CGST+T.SGST+T.IGST) AS 'BILL AMOUNT',
+			b.BILL_ID as 'BILL ID',
+			b.DATE as 'DATE',
+			(b.TOTAL_AMOUNT+t.CGST+t.SGST+t.IGST) AS 'BILL AMOUNT',
 			(select GROUP_CONCAT(bi.quantity) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'QUANTITY'  ,
 			(select GROUP_CONCAT(bi.rate) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'RATE'  ,
 			DATE_FORMAT(tr.DATE, '%d/%m/%Y') as t_date,		
@@ -48,17 +48,17 @@
 			0 as 'PAYMENT AMOUNT',	
 			0 as 'PAYMENT DESCRIPTION'
 
-			FROM bills_tbl B,
+			FROM bills_tbl b,
 			transport_tbl tr,
-			tax_details_tbl T,
-			customers_tbl C 
+			tax_details_tbl t,
+			customers_tbl c 
 			
 			WHERE 
 
-			B.BILL_ID=tr.BILL_ID AND
-			T.BILL_ID=B.BILL_ID AND
-			B.customer_id=C.customer_id AND
-			C.COMPANY_NAME='$company_name' AND
+			b.BILL_ID=tr.BILL_ID AND
+			t.BILL_ID=b.BILL_ID AND
+			b.customer_id=c.customer_id AND
+			c.COMPANY_NAME='$company_name' AND
 			b.DATE>='$from_date' AND b.DATE<='$to_date' 
     
 
@@ -82,7 +82,7 @@
  
  
 			FROM credits_tbl c,
-			customers_tbl Cr 
+			customers_tbl cr 
 
 			WHERE
 			cr.customer_id=c.customer_id 

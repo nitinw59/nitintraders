@@ -26,7 +26,7 @@
 
 	//27022025
 	
-	$sql = "SELECT DISTINCT BRAND from GENERALIZED_ITEMS WHERE AVAIALABLE_QTY > 0 ";
+	$sql = "SELECT DISTINCT BRAND from generalized_items WHERE AVAIALABLE_QTY > 0 ";
 	$generalizedItems = array();
 	if($result = mysqli_query($dbhandle_stockmanager,$sql) ){
 		$count=0;
@@ -40,7 +40,7 @@
 		
 	}
 
-	print_r($generalizedItems);
+	
 	?>
 	
 
@@ -146,6 +146,10 @@
 					}
 				});
 				
+
+
+
+
 				$('#rate').on("keypress", function(e) {
 					if (e.keyCode == 13) {
 						var item_id=$("#item_id").val();
@@ -168,13 +172,6 @@
 						
 						$("#totalquantitylabel").html(totalquntity);
 						
-						
-						
-						
-						
-						
-						
-						
 						var taxdetailshtml="<tr><th>sr</th><th>HSN</th><th>Taxable Amount</th>";
 						if(customerdetails["STATE"]==companydetails["state"]){
 						taxdetailshtml += "<th>CGST</th><th>SGST</th></tr>";
@@ -188,6 +185,11 @@
 						$("#taxdetailtable").html(taxdetailshtml);
 						
 						$("#item_id").val('');
+						$("brand").empty();
+						$("#brand").select2({
+				  			data: generalizedItems
+							});
+				
 						//$("#brand").val("Select Item").trigger("change");
 						$("#item_style").empty();
 						$("#size").empty();
@@ -206,21 +208,6 @@
 					
 					}
 				});
-				
-				
-				
-			
-				
-				
-
-
-			
-
-
-
-
-
-
 				
 				$(".delete-row").click(function(){
 
@@ -417,9 +404,9 @@
 													url:"newInvoiceAction.php",
 													data:"itemsrow="+items_row_string+"&bill_id="+bill_id+"&action=insertBillItems",
 													success:function(data){
-														alert(data);
+														alert("BILL GENERATED CHECK LIST BILLS.");
 													window.open("showInvoice.php?bill_id="+bill_id,"_blank");
-													window.open("showInvoicesecond.php?bill_id="+bill_id,"_blank");
+													//window.open("showInvoicesecond.php?bill_id="+bill_id,"_blank");
 													location.reload();
 													}
 												});
@@ -622,7 +609,7 @@
 			<table><tr>
 			<td width="50%"><button type="button" class="delete-row">Delete Row</button></td>
 			<td  width="20%"><label id="totalquantitylabel">0</label></td>
-			<td  width="30%"><label id="totalamountlabel"> ₹0</label></td>
+			<td  width="30%"><label id="totalamountlabel"> ---</label></td>
 			<td  width="15%"><label id="totalbamountlabel"> ₹0</label></td>
 			</tr>
 			</table>
@@ -630,35 +617,10 @@
 				
 		</div>
 		
-		//27022025
+		
+		
 		
 		<div class="ItemsDetails" id="ItemsDetails">
-		<table >
-           <tr>
-                <th>Sr.</th>
-                <th>Item Code</th>
-                <th>Description</th>
-				
-				<th>QUANTITY</th>
-				<th>RATE</th>
-				<th>AMOUNT</th>
-				
-				
-			</tr>
-			
-			<tbody id="items_table_body">
-			</tbody>
-		</table>
-		</br>
-			<table><tr>
-			<td width="50%"><button type="button" class="delete-row">Delete Row</button></td>
-			<td  width="20%"><label id="totalquantitylabel">0</label></td>
-			<td width="20%"></td>
-			<td  width="20%"><label id="totalamountlabel"> ₹0</label></td>
-			</tr>
-			</table>
-		
-		<div class="ItemsDetails2" id="ItemsDetailsInput">
 		<table>
 		<tr><th>BRAND</th><th>STYLE</th><th>SIZE</th><th>QUANTITY</th><th>Rate</th></tr>
 		<tr>

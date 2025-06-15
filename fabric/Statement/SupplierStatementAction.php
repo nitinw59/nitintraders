@@ -16,7 +16,7 @@
 	$from_date=$_POST["from_date"];
 	$to_date=$_POST["to_date"];
 	  
-	$sqlquery="select ADVANCE_CREDIT FROM FABRIC_MERCHANTS_TBL C WHERE C.COMPANY_NAME='".$company_name."'  ";
+	$sqlquery="select ADVANCE_CREDIT FROM fabric_merchants_tbl C WHERE C.COMPANY_NAME='".$company_name."'  ";
     $show=mysqli_query($dbhandle,$sqlquery);
 	$row=mysqli_fetch_array($show);
 	$ADVANCE_CREDITS=0;
@@ -63,10 +63,10 @@
 	$sqlquery="
 	select 
 			SUM(B.AMOUNT+B.CGST+B.SGST+B.IGST) as 'total_amount' ,
-			SUM(b.payment_amount) as 'total_payment'
-			FROM MERCHANT_BILLS_TBL B,
+			SUM(B.payment_amount) as 'total_payment'
+			FROM merchant_bills_tbl B,
 			
-			FABRIC_MERCHANTS_TBL C 
+			fabric_merchants_tbl C 
 			
 			WHERE 
 			B.DATE<'$from_date' AND
@@ -100,15 +100,15 @@
 			B.loc AS 'loc',
 			payment_amount as 'PAYMENT AMOUNT'	
 			
-			FROM MERCHANT_BILLS_TBL B,
+			FROM merchant_bills_tbl B,
 			
-			FABRIC_MERCHANTS_TBL C 
+			fabric_merchants_tbl C 
 			
 			WHERE 
 
 			B.FABRIC_MERCHANTS_ID=C.FABRIC_MERCHANTS_ID AND
 			C.COMPANY_NAME='$company_name' AND
-			b.DATE>='$from_date' AND b.DATE<='$to_date' 
+			B.DATE>='$from_date' AND B.DATE<='$to_date' 
     
 			order by date asc";
 		
@@ -124,7 +124,7 @@
         
 		$bill['BILL ID']=0;
 		$bill['DATE']='';
-		$bill['BILL AMOUNT']=$old_balance;
+		$bill['BILL AMOUNT']=round($old_balance);
 		$bill['CGST']=0;
 		$bill['SGST']=0;
 		$bill['IGST']=0;
@@ -146,12 +146,12 @@
         
 		$bill['BILL ID']=$row['BILL ID'];
 		$bill['DATE']=date('d/m/Y', strtotime($row['DATE']));
-		$bill['BILL AMOUNT']=$row['BILL AMOUNT'];
+		$bill['BILL AMOUNT']=round($row['BILL AMOUNT']);
 		$bill['SGST']=$row['SGST'];
 		$bill['CGST']=$row['CGST'];
 		$bill['IGST']=$row['IGST'];
 		$bill['loc']=$row['loc'];
-		$bill['PAYMENT AMOUNT']=$row['PAYMENT AMOUNT'];
+		$bill['PAYMENT AMOUNT']=round($row['PAYMENT AMOUNT']);
 		$bill['ITEM_QUANTITY']=$row['ITEM_QUANTITY'];
 		$bill['ITEM_RATE']=$row['ITEM_RATE'];
 		
@@ -169,7 +169,7 @@
 		
   }else if($action=="getSupplierCredits"){
 	$company_name=$_POST["company_name"];
-	$sqlquery="select ADVANCE_CREDIT FROM FABRIC_MERCHANTS_TBL C WHERE C.COMPANY_NAME='".$company_name."'  ";
+	$sqlquery="select ADVANCE_CREDIT FROM fabric_merchants_tbl C WHERE C.COMPANY_NAME='".$company_name."'  ";
     $show=mysqli_query($dbhandle,$sqlquery);
 	$row=mysqli_fetch_array($show);
 	$ADVANCE_CREDITS=0;

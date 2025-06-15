@@ -187,11 +187,10 @@ tr:nth-child(even){background-color: #f2f2f2}
 include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/index.php");
 
 
-$selected = mysqli_select_db($dbhandle,$dbname) 
-  or die(mysql_error());
 
 // Attempt select query execution
-$sql = "SELECT  *  FROM customers_tbl where mobile='".$_GET["mobile"]."'";
+$sql = "SELECT  *  FROM customers_tbl where MOBILE='".$_GET["mobile"]."'";
+
 
 if($result = mysqli_query($dbhandle,$sql) ){
 	if(mysqli_num_rows($result) > 0){
@@ -201,15 +200,15 @@ if($result = mysqli_query($dbhandle,$sql) ){
 		$customer_id = $row['customer_id'] ;
         $FNAME =   $row['FNAME'] ;
         $LNAME =  $row['LNAME'];
-        $COMPANY_NAME =    $row['COMPANY_NAME'];
+        $COMPANY_NAME =  $row['COMPANY_NAME'];
         $EMAIL = $row['EMAIL'] ;
         $MOBILE  = $row['MOBILE'] ;
         $GSTTREATMENT  = $row['GSTTREATMENT'] ;	
-		$GSTN=$row['GSTN'];
-		$ADDRESS=$row['ADDRESS'];
-		$CITY=$row['CITY'];
-		$STATE=$row['STATE'];
-		$ZIP=$row['ZIP'];
+		    $GSTN=$row['GSTN'];
+		    $ADDRESS=$row['ADDRESS'];
+		    $CITY=$row['CITY'];
+		    $STATE=$row['STATE'];
+		    $ZIP=$row['ZIP'];
 		
 			
 			
@@ -219,7 +218,7 @@ if($result = mysqli_query($dbhandle,$sql) ){
 <body>
 
 <div class='center'>
-<font color='Green' size='6'> Customer Successfuly Added.</font>
+<font color='Green' size='6'> Customer Successfuly Added/Updated.</font>
 </div>
 
 

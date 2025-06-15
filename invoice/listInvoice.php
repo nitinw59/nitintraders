@@ -91,9 +91,9 @@ include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/index.php");
 
 // Attempt select query execution
 //$sql = "SELECT B.BILL_ID, B.DATE,TR.LR, TR.LR_LOC, DUE_DATE,COMPANY_NAME,GSTN, TOTAL_AMOUNT, CGST, SGST, IGST FROM bills_tbl B,customers_tbl C, tax_details_tbl T,transport_tbl TR WHERE B.BILL_ID=T.BILL_ID AND B.BILL_ID=TR.BILL_ID AND B.CUSTOMER_ID=C.CUSTOMER_ID ORDER BY BILL_ID DESC";
-$sql = "SELECT B.BILL_ID,(select GROUP_CONCAT(bi.quantity) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'QUANTITY'  ,"
+$sql = "SELECT b.BILL_ID,(select GROUP_CONCAT(bi.quantity) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'QUANTITY'  ,"
 		."(select GROUP_CONCAT(bi.rate) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'RATE'  ,"
-		." B.DATE,TR.LR, TR.LR_LOC, DUE_DATE,COMPANY_NAME,GSTN, TOTAL_AMOUNT, CGST, SGST, IGST FROM bills_tbl B,customers_tbl C, tax_details_tbl T,transport_tbl TR WHERE B.BILL_ID=T.BILL_ID AND B.BILL_ID=TR.BILL_ID AND B.CUSTOMER_ID=C.CUSTOMER_ID ORDER BY BILL_ID DESC";
+		." b.DATE,tr.LR, tr.LR_LOC, DUE_DATE,COMPANY_NAME,GSTN, TOTAL_AMOUNT, CGST, SGST, IGST FROM bills_tbl b,customers_tbl c, tax_details_tbl t,transport_tbl tr WHERE b.BILL_ID=t.BILL_ID AND b.BILL_ID=tr.BILL_ID AND b.CUSTOMER_ID=c.CUSTOMER_ID ORDER BY BILL_ID DESC";
 
 if($result = mysqli_query($dbhandle,$sql)){
     
@@ -138,7 +138,8 @@ if($result = mysqli_query($dbhandle,$sql)){
 		  
                 echo "<td><center>" . $row['BILL_ID'] . "<center></td>";
                 echo "<td><center>" . $row['DATE'] . "<center></td>";
-                echo "<td><center><a href=/$nitinTraders/invoice/".$loc.">".$LR."</a><center></td>";
+                
+                echo "<td><center><a href='/$loc'>".$LR."</a><center></td>";
                 echo "<td><center>" . $row['COMPANY_NAME'] . "<center></td>";
                 echo "<td style='width:7%'>" . substr($row['QUANTITY'],0,10). "</td>";
                 echo "<td style='width:7%'> " . substr($row['RATE'],0,10) . "</td>";

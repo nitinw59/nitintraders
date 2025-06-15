@@ -9,7 +9,7 @@
 	
 	
 	
-	$sql = "SELECT B.BILL_NO, DATE, COMPANY_NAME,GSTN, AMOUNT, CGST, SGST, IGST FROM MERCHANT_BILLS_TBL B,FABRIC_MERCHANTS_TBL C WHERE B.FABRIC_MERCHANTS_ID=C.FABRIC_MERCHANTS_ID AND b.DATE>='$from_date' AND b.DATE<='$to_date' ORDER BY b.DATE ";
+	$sql = "SELECT B.BILL_NO, DATE, COMPANY_NAME,GSTN, AMOUNT, CGST, SGST, IGST FROM merchant_bills_tbl B,fabric_merchants_tbl C WHERE B.FABRIC_MERCHANTS_ID=C.FABRIC_MERCHANTS_ID AND B.DATE>='$from_date' AND B.DATE<='$to_date' ORDER BY B.DATE ";
 			$show=mysqli_query($dbhandle,$sql);
 	
 		echo "<table style='width:80%'  align=center><center>";

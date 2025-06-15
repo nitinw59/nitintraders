@@ -83,6 +83,7 @@
 							
 							transportDetails= JSON.parse(data);
 							$("#LR_EWAY").val(transportDetails["LR_EWAY"]);
+							$("#LR").val(transportDetails["LR"]);
 							$("#LR_PARCELS").val(transportDetails["transport_parcels"]);
 							$("#LR_TRANSPORT").val(transportDetails["transport_name"]);
 							$("#LR_DATE").val(transportDetails["DATE"]);

@@ -190,7 +190,7 @@ label.light {
 
 
 // Attempt select query execution
-$sql = "SELECT * FROM FABRIC_MERCHANTS_TBL ORDER BY FABRIC_MERCHANTS_ID DESC";
+$sql = "SELECT * FROM fabric_merchants_tbl ORDER BY FABRIC_MERCHANTS_ID DESC";
 
 if($result = mysqli_query($dbhandle,$sql)){
     

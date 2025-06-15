@@ -5,9 +5,13 @@
 	
   $action=$_POST["action"];
   if($action=="addBill"){
+	$relative_path="data/$nitinTraders/fabric/invoice/";
 	  
 	$status=0;
-		
+		if(!file_exists($_SERVER["DOCUMENT_ROOT"]."/".$relative_path)){
+			mkdir($_SERVER["DOCUMENT_ROOT"]."/".$relative_path,755,true);
+			echo "hello";
+			}
 	
 		if(isset($_FILES['img_file']['name'])){
 		$filename=$_FILES['img_file']['name'];
@@ -25,7 +29,7 @@
 					$status=0;
 				}else{
 					$location=strtotime("now").".".$imageFileType;
-					if(move_uploaded_file($_FILES['img_file']['tmp_name'],"scn/".$location)){
+					if(move_uploaded_file($_FILES['img_file']['tmp_name'],$_SERVER["DOCUMENT_ROOT"]."/".$relative_path.$location)){
 						$merchant_name=$_POST['merchant_name'];
 						$meter=$_POST['meter'];
 						$meterRate=$_POST['meterRate'];
@@ -35,7 +39,7 @@
 						$IGST=$_POST['IGST'];
 						$amount=$_POST['amount'];
 						$BILL_NO=$_POST['BILL_NO'];
-						$sqlquery="INSERT INTO MERCHANT_BILLS_TBL(BILL_NO,DATE,FABRIC_MERCHANTS_ID,AMOUNT,CGST,SGST,IGST,loc,MTR,RATE)VALUES($BILL_NO,'".$B_DATE."',(SELECT fabric_merchants_id FROM fabric_merchants_tbl where COMPANY_NAME='".$merchant_name."'),$amount,$CGST,$SGST,$IGST,'$location','$meter','$meterRate')";                                                           
+						$sqlquery="INSERT INTO merchant_bills_tbl(BILL_NO,DATE,FABRIC_MERCHANTS_ID,AMOUNT,CGST,SGST,IGST,loc,MTR,RATE)VALUES($BILL_NO,'".$B_DATE."',(SELECT fabric_merchants_id FROM fabric_merchants_tbl where COMPANY_NAME='".$merchant_name."'),$amount,$CGST,$SGST,$IGST,'$location','$meter','$meterRate')";                                                           
 	
 						$status=mysqli_query($dbhandle,$sqlquery); 
 					}else{
@@ -55,7 +59,7 @@
 	}
 	else if($action=="fetchcustomerdetail"){
 	 $customercompanyname=$_POST["customercompanyname"];
-	 $sqlquery="Select * from FABRIC_MERCHANTS_TBL where COMPANY_NAME='".$customercompanyname."'";
+	 $sqlquery="Select * from fabric_merchants_tbl where COMPANY_NAME='".$customercompanyname."'";
      $show=mysqli_query($dbhandle,$sqlquery);
  
      while($row=mysqli_fetch_array($show)){

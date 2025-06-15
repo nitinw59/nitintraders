@@ -7,7 +7,7 @@
 	include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/var.php");
 	
 	
-	$sql = "SELECT COMPANY_NAME FROM FABRIC_MERCHANTS_TBL";
+	$sql = "SELECT COMPANY_NAME FROM fabric_merchants_tbl";
 	$customercompanynames = array();
 	if($result = mysqli_query($dbhandle,$sql) ){
 		$count=0;
@@ -73,7 +73,7 @@
                         url:"SupplierStatementAction.php",
                         data:"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date+"&action=listSupplierStatement",
                         success:function(data){
-						
+						alert(data);
 						var counter=0;
 						var credits=0;
 						var old_balance=0;

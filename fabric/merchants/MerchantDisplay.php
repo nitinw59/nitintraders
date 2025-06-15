@@ -184,17 +184,12 @@ tr:nth-child(even){background-color: #f2f2f2}
 <?php
 
 
-include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/mysqlconnectdb.php");
-
 
 include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/index.php");
 
 
-$selected = mysqli_select_db($dbhandle,$dbname) 
-  or die(mysql_error());
-
 // Attempt select query execution
-$sql = "SELECT  *  FROM FABRIC_MERCHANTS_TBL where mobile='".$_GET["mobile"]."'";
+$sql = "SELECT  *  FROM fabric_merchants_tbl where mobile='".$_GET["mobile"]."'";
 
 if($result = mysqli_query($dbhandle,$sql) ){
 	if(mysqli_num_rows($result) > 0){
@@ -207,12 +202,11 @@ if($result = mysqli_query($dbhandle,$sql) ){
         $COMPANY_NAME =    $row['COMPANY_NAME'];
         $EMAIL = $row['EMAIL'] ;
         $MOBILE  = $row['MOBILE'] ;
-       
-		$GSTN=$row['GSTN'];
-		$ADDRESS=$row['ADDRESS'];
-		$CITY=$row['CITY'];
-		$STATE=$row['STATE'];
-		$ZIP=$row['ZIP'];
+        $GSTN=$row['GSTN'];
+		    $ADDRESS=$row['ADDRESS'];
+		    $CITY=$row['CITY'];
+		    $STATE=$row['STATE'];
+		    $ZIP=$row['ZIP'];
 		
 			
 			
@@ -251,7 +245,7 @@ if($result = mysqli_query($dbhandle,$sql) ){
 
 
 	<!-- Pushy JS -->
-        <script src="<?=$nitinTraders?>/js/pushy.min.js"></script>
+        <script src="/<?=$nitinTraders?>/js/pushy.min.js"></script>
 
 
 </body>

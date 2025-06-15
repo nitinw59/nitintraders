@@ -20,10 +20,10 @@
 	
 	
   }else if($action=="removeBillItem"){
-   $item_id=$_POST["item_id"];
+   $bill_items_id=$_POST["bill_item_id"];
 	$bill_id=$_POST["bill_id"];
 	
-	$sqlquery="DELETE FROM BILL_ITEMS_TBL WHERE BILL_ID=".$bill_id." AND ITEMS_ID = ".$item_id;
+	$sqlquery="DELETE FROM bill_items_tbl WHERE bill_items_id = ".$bill_items_id;
                                                            
 	
 	$show=mysqli_query($dbhandle,$sqlquery);
@@ -36,11 +36,12 @@
 	$bill_id=$_POST["bill_id"];
 	$QUANTITY=$_POST["quantity"];
 	$RATE=$_POST["rate"];
-	$bRATE=$_POST["brate"];
+	$DESCRIPTION=$_POST["description"];
 	
 	
 	
-	$sqlquery="INSERT INTO bill_items_tbl (BILL_ID,ITEMS_ID,QUANTITY,RATE,b_rate) VALUE (".$bill_id.",".$item_id.",".$QUANTITY.",".$RATE.",".$bRATE.")";
+	
+	$sqlquery="INSERT INTO bill_items_tbl (BILL_ID,ITEMS_ID,QUANTITY,RATE,DESCRIPTION) VALUE (".$bill_id.",".$item_id.",".$QUANTITY.",".$RATE.",'".$DESCRIPTION."')";
     $show=mysqli_query($dbhandle,$sqlquery);
 	
 	
@@ -52,9 +53,6 @@
 	$transportparcels=$_POST["transportparcels"];
 	$bill_id=$_POST["bill_id"];
 	
-	$sqlquery="INSERT INTO transport_tbl (bill_id,DATE,transport_name,transport_parcels,LR)VALUES ('".$bill_id."','','".$transportname."',".$transportparcels.",'')";                                                           
-	
-	$show=mysqli_query($dbhandle,$sqlquery);
 	
 	
 	$sqlquery="update transport_tbl set transport_name ='".$transportname."',transport_parcels ='".$transportparcels."' where BILL_ID=".$bill_id;                                                           
@@ -94,7 +92,7 @@
 	//	$TOTAL_AMOUNT=$row['total_amount'];
 	
 	$bill_items_list;
-	$sqlquery="select  i.items_id,bi.quantity,bi.rate,i.description,I.SIZE,I.TAX_RATE  from bill_items_tbl bi,items_tbl i where bi.bill_id=".$BILL_ID." and bi.items_id=i.items_id;";
+	$sqlquery="select  i.items_id,bi.quantity,bi.rate,i.description,i.SIZE,i.TAX_RATE  from bill_items_tbl bi,items_tbl i where bi.bill_id=".$BILL_ID." and bi.items_id=i.items_id;";
  
 				
 	$show=mysqli_query($dbhandle,$sqlquery);

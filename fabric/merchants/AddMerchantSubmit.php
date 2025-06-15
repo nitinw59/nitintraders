@@ -3,13 +3,6 @@
 	
 	include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/mysqlconnectdb.php");
 	
-
-	
-
-
-	
-	
-
 	$Fname=$_POST['Fname'];
 	$Lname=$_POST['Lname'];
 	$companyname=$_POST['companyname'];
@@ -21,14 +14,12 @@
 	$email=$_POST['email'];
 	$GSTN= $_POST['GSTN'];
 
- 	$query_upload=" insert into FABRIC_MERCHANTS_TBL(FNAME,LNAME,COMPANY_NAME,EMAIL,MOBILE,GSTN,ADDRESS,CITY,STATE,ZIP) VALUES('".$Fname."','".$Lname."','".$companyname."','".$email."',".$mobile.",'".$GSTN."','".$address."','".$city."','".$state."','".$zip."');";
-	echo $query_upload;
+ 	$query_upload=" insert into fabric_merchants_tbl(FNAME,LNAME,COMPANY_NAME,EMAIL,MOBILE,GSTN,ADDRESS,CITY,STATE,ZIP) VALUES('".$Fname."','".$Lname."','".$companyname."','".$email."',".$mobile.",'".$GSTN."','".$address."','".$city."','".$state."','".$zip."');";
 	
 	
 	
 
-	$selected = mysqli_select_db($dbhandle,$dbname) 
-  or die("Could not select database1");
+	
 
 	$status=mysqli_query($dbhandle,$query_upload) ; 
 	
@@ -41,7 +32,7 @@
 	}
 	
 	
-	//echo "<meta http-equiv='refresh' content='0;url=".$url."'>";
+	echo "<meta http-equiv='refresh' content='0;url=".$url."'>";
 	
 
 

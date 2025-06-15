@@ -15,9 +15,21 @@
 		$customercompanynames[$count] = $row['COMPANY_NAME'];
 		$count++;
 		}
-		
-		
 	}
+
+
+	
+	$sql = "SELECT DISTINCT BRAND from generalized_items WHERE AVAIALABLE_QTY > 0 ";
+	$generalizedItems = array();
+	if($result = mysqli_query($dbhandle_stockmanager,$sql) ){
+		$count=0;
+		$generalizedItems[$count]="Select Item";
+		$count++;
+		while($row = mysqli_fetch_array($result)) {
+		$generalizedItems[$count] = $row['BRAND'];
+		$count++;
+		}
+	} 
 	
 	
 	
@@ -71,185 +83,104 @@
 			$(document).ready(function() {
 				
 				var buyernameArray = <?php echo json_encode($customercompanynames); ?>;
+				var generalizedItems = <?php echo json_encode($generalizedItems); ?>;
+
+
+
 				$("#buyername").select2({
 				  data: buyernameArray
 				});
 				
-				
-				
-				
-				$('#item_id').on("keypress", function(e) {
-					if (e.keyCode == 13) {
-						
-						var item_id=$("#item_id").val();
-						$.ajax({
-                        type:"post",
-                        url:"newInvoiceAction.php",
-                        data:"item_id="+item_id+"&action=getitemdetail",
-                        success:function(data){
-							try{
-							
-							var itemdetail = JSON.parse(data);
-							$("#description").val((itemdetail["DESCRIPTION"]+" "+itemdetail["SIZE"]));
-							$("#rate").val(itemdetail["RATE"]);
-							current_item_rate=parseInt(itemdetail["RATE"]);
-							$("#quantity").val('');
-							
-							$("#item_availability").html(itemdetail["QUANTITY_RECEIVED"]);
-							}catch(e){
-								
-							$("#description").val('');
-							$("#rate").val('');
-							
-							$("#quantity").val('');
-							$("#item_id").val('');
-							
-								
-							$("#item_availability").html("Item not available");
-							
-							}
-							
-                        }
-                     });											
-					return false; // prevent the button click from happening
-					}
+
+				$("#brand").select2({
+				  data: generalizedItems
 				});
+
+				
 				
 				$('#rate').on("keypress", function(e) {
-					
-					if (e.keyCode == 13) {
-						
-						var rate=$("#rate").val();
-						$("#brate").val(current_item_rate-(rate*1.05));
-						$("#brate").focus();
-						
-						
-					return false; // prevent the button click from happening
-					
-					}else{
-					alert ("Total Available Quantity : "+quantity_available);
-					}
-					
-					
-					
-					
-				});
-				
-				$('#brate').on("keypress", function(e) {
 					if (e.keyCode == 13) {
 						var item_id=$("#item_id").val();
-						var description=$("#description").val();
 						var rate=$("#rate").val();
-						var brate=$("#brate").val();
 						var taxrate=5;
 						var quantity=$("#quantity").val();
 						var hsn="HSN";
-						var markup = "<tr><td colspan='2'><input type='checkbox' name='record'></td><td><center>" + item_id + "</center></td><td><center>" + description + "</center></td><td><center>" + quantity + "</center></td><td><center>" + rate + "</center></td><td><center>" + ((rate*quantity)) + "</center></td><td><center>" + brate + "</center></td><td><center>" + ((brate*quantity)) + "</center></td></tr>";
-						var samestate;
-						
-						if($("#customerstate").html()==$("#companystate").html()){
-						samestate=1;
-						}else{
-						samestate=-1;
-						}
-						
-						
-						
+						var description=$("#brand").val()+"_"+$("#item_style").val()+"_"+$("#size").val();
+
+						var markup = "<tr><td colspan='2'><center><input type='checkbox' name='record'></center></td><td><center>" + item_id + "</center></td><td><center>" + description + "</center></td><td><center>" + quantity + "</center></td><td><center>" + rate + "</center></td><td><center>" + ((rate*quantity)) + "</center></td></tr>";
 						
 						var quantity_available=parseInt($("#item_availability").html());
 						if(quantity_available>=quantity){
-						total_amount=$("#total_tax_amount").attr("value");
-						total_bamount=$("#totalbamountlabel").attr("value");
-						total_quantity=$("#totalquantitylabel").attr("value");
-						
-						$("#items_table_body").append(markup);
-						total_amount = Number(total_amount)+Number(rate*quantity);
-						
-						$("#totalamountlabel").attr("value",total_amount);
-						$("#totalamountlabel").html(total_amount);
-						
-						$("#totalbamountlabel").attr("value",(Number(total_bamount)+Number(brate*quantity)));
-						$("#totalbamountlabel").html(Number(total_bamount)+Number(brate*quantity));
-						
-						$("#totalquantitylabel").attr("value",(Number(total_quantity)+Number(quantity)));
-						$("#totalquantitylabel").html(Number(total_quantity)+Number(quantity));
-						
-						
-						$("#total_tax_amount").attr("value",total_amount);
-						$("#total_tax_amount").html(total_amount);
-						
-						
-						try{
-						$.ajax({
-                        type:"post",
-                        url:"updateInvoiceAction.php",
-                        data:"item_id="+item_id+"&bill_id="+$.getUrlVar('bill_id')+"&quantity="+quantity+"&rate="+rate+"&brate="+brate+"&action=addBillItem",
-                        success:function(data){
+
+							var database_flag=false;
+
 							
-							try{
-								
-							if(data>-1){
-							alert ("updated Successfuly.");
-							
-							}else{
-								
-							alert("Failed To Update");
-							}
-							}catch(e){
-							$("#item_availability").html("Item not available");
-							
-							}
-							
-                        }
-                     });
-						
-						}catch(e){
-							alert(e);
-							
-							}
-						
-						
-						
-						
-						
-						
-						try{
-						
-						var taxdetailshtml="<tr><th>sr</th><th>HSN</th><th>Taxable Amount</th>";
-						if(samestate>-1){
-						$("#total_sgst_amount").attr("value",(total_amount*(2.5/100)));
-						$("#total_sgst_amount").html((total_amount*(2.5/100)));
-						$("#total_cgst_amount").attr("value",(total_amount*(2.5/100)));
-						$("#total_cgst_amount").html((total_amount*(2.5/100)));
-						
-						//$("#total_cgst_amount").attr("value",(total_amount*0.025));
-						
-						}else{
-						$("#total_igst_amount").attr("value",(total_amount*(5/100)));
-						$("#total_igst_amount").html((total_amount*(5/100)));
-						
-						}
-						
-						$("#item_id").val('');
-							
-						$("#description").attr("value","");
-						$("#rate").val('');
-							
-						$("#quantity").val('');
-							
-						$("#item_id").focus();
-						
-						
-						
-						}catch(e){
-						alert(e);
-						}
-						
-						
-						
-						
-						
-					return false; // prevent the button click from happening
+													try{
+														$.ajax({
+														type:"post",
+														async: false,
+														url:"updateInvoiceAction.php",
+														data:"item_id="+item_id+"&bill_id="+$.getUrlVar('bill_id')+"&quantity="+quantity+"&rate="+rate+"&description="+description+"&action=addBillItem",
+														success:function(data){
+																	try{
+																		
+																	if(data>-1){
+																		database_flag=true;
+																		alert ("updated Successfuly.");
+																	
+																	}else{
+																		
+																	alert("Failed To Update");
+																	}
+																	}catch(e){
+																	$("#item_availability").html("Item not available");
+																	
+																	}
+													
+																	}
+														});
+												
+													}catch(e){
+													alert(e);
+													
+													}
+
+
+															
+																if(database_flag){
+
+
+																$("#items_table_body").append(markup);
+																total_amount += (rate*quantity);
+																
+																totalquntity+= parseInt(quantity);
+																$("#totalamountlabel").html("₹"+total_amount);
+																$("#totalbamountlabel").html("₹"+total_bamount);
+																
+																$("#totalquantitylabel").html(totalquntity);
+																				
+																var taxdetailshtml="<tr><th>sr</th><th>HSN</th><th>Taxable Amount</th>";
+																if(customerdetails["STATE"]==companydetails["state"]){
+																taxdetailshtml += "<th>CGST</th><th>SGST</th></tr>";
+																taxdetailshtml +="<tr><td>1.</td><td>HSN</td><td>"+total_amount+"</td><td>"+(total_amount*(2.5/100))+"\n@2.5%</td><td>"+(total_amount*(2.5/100))+"\n@2.5%</td></tr>";
+																
+																}else{
+																taxdetailshtml += "<th>IGST</th></tr>";
+																taxdetailshtml +="<tr><td>1.</td><td>HSN</td><td>"+total_amount+"</td><td>"+(total_amount*(5/100))+"\n@5%</td></tr>";
+																
+																}
+																$("#taxdetailtable").html(taxdetailshtml);
+																}
+																$("#item_id").val('');
+																//$("#brand").val("Select Item").trigger("change");
+																$("#item_style").empty();
+																$("#size").empty();
+																$("#rate").val('');
+																$("#quantity").val('');
+																$("#brand").select2("open");
+																
+																
+															return false; // prevent the button click from happening
 					
 					}else{
 					alert ("Total Available Quantity : "+quantity_available);
@@ -259,8 +190,129 @@
 					
 					}
 				});
+
+				$("#brand").change(function(){
+				$("#size").html('');
+				$("#item_style").html('');
+				var brand= $("#brand").val();
 				
+				$.ajax({
+					type:"post",
+					url:"newInvoiceAction.php",
+					data:"brand="+brand+"&action=getStyleList",
+					success:function(data){
+						
+						
+						$("#item_style").select2({
+				  			data: JSON.parse(data)
+						});
+						$("#item_style").select2("open");
+
+
+					}
+				});
+
+
+
+			   });
+		
+		//0108/2025
+
+		$("#size").change(function(){
+				var brand=$("#brand").val();
+				var itemStyle=$("#item_style").val();
+				var size=$("#size").val();
 				
+				$.ajax({
+                        type:"post",
+                        url:"newInvoiceAction.php",
+                        data:"brand="+brand+"&itemStyle="+itemStyle+"&size="+size+"&action=fetchItemDetails",
+                        success:function(data){
+							try{
+										var itemdetail = JSON.parse(data);
+										$("#rate").val(itemdetail["SELLING_PRICE"]);
+										current_item_rate=parseInt(itemdetail["SELLING_PRICE"]);
+										$("#quantity").val('');
+										$("#quantity").focus();
+										$("#item_id").val(itemdetail["items_id"])
+										$("#item_availability").html(itemdetail["AVAIALABLE_QTY"]);
+							}catch(e){
+								
+										$("#brand").val('');
+										$("#item_style").val('');
+										$("#size").val('');
+										$("#rate").val('');
+										$("#quantity").val('');
+										$("#item_id").val('');
+										$("#item_availability").html("Item not available");
+							
+							}
+							
+							
+							
+							
+                        }
+                     });
+
+
+
+
+
+
+			   });
+
+
+
+		$("#item_style").change(function(){
+
+				$("#size").html('');
+				var brand= $("#brand").val();
+				var style= $("#item_style").val();
+
+			$.ajax({
+				type:"post",
+				url:"newInvoiceAction.php",
+				data:"brand="+brand+"&style="+style+"&action=getSizeList",
+				success:function(data){
+						$("#size").select2({
+					  	data: JSON.parse(data)
+						});
+					$("#size").select2("open");
+
+					}
+			});
+		});
+		
+		
+
+		
+		$(".syncGeneralizedItemsList").click(function(){
+				$("#item_style").empty().trigger("change");
+				
+				$("#size").empty().trigger("change");
+				$("#brand").html('');
+				$.ajax({
+					type:"post",
+					url:"newInvoiceAction.php",
+					data:"action=getBrandList",
+					success:function(data){
+						$("#brand").select2({
+				  			data: JSON.parse(data)
+						});
+						$("#brand").select2("open");
+
+					}
+				});
+
+				
+			   });
+
+
+	//01082025 ENDs		   
+				
+			
+				
+			
 				
 				$(".delete-row").click(function(){
 				
@@ -275,7 +327,7 @@
 					$.ajax({
                         type:"post",
                         url:"updateInvoiceAction.php",
-                        data:"item_id="+c.textContent+"&bill_id="+$.getUrlVar('bill_id')+"&action=removeBillItem",
+                        data:"bill_item_id="+c.textContent+"&bill_id="+$.getUrlVar('bill_id')+"&action=removeBillItem",
                         success:function(data){
 							try{
 								
@@ -395,11 +447,8 @@
 			
 			$("#updatetransportbutton").click(function(){
 				
-				
-				
 				var transportname=$("#transportname").val();
 				var transportparcels=$("#transportparcels").val();
-				
 				
 				$.ajax({
                         type:"post",
@@ -627,8 +676,7 @@
 				<th>QUANTITY</th>
 				<th>RATE</th>
 				<th>AMOUNT</th>
-				<th>B_RATE</th>
-				<th>B_AMOUNT</th>
+				
 				
 				
 			</tr>
@@ -637,33 +685,41 @@
 				
 				<?php
 				$count=1;
-				$sql = "SELECT I.DESCRIPTION, I.SIZE, I.ITEMS_ID,BI.QUANTITY, BI.RATE, BI.B_RATE FROM Items_TBL I, bill_ITEMS_tbl bI where BI.ITEMS_ID=I.ITEMS_ID AND BI.bill_id=".$_GET["bill_id"];
 				
-				if($result = mysqli_query($dbhandle,$sql) ){
+ 				$sqlquery="select  
+  					bi.bill_items_id,
+					bi.quantity,
+					bi.rate,
+					bi.description
+					from bill_items_tbl bi where bi.bill_id=".$_GET["bill_id"].";";
+				
+				if($result = mysqli_query($dbhandle,$sqlquery) ){
 				
 					while($row = mysqli_fetch_array($result)) {
 		
 				echo "<tr>";
 				echo "<td colspan='2'><input type='checkbox' name='record'></td>";
+				echo "<td><center>".$row['bill_items_id']."</center></td>";
+				echo "<td><center>".$row['description']."</center></td>";
+				echo "<td><center>".$row['quantity']."</center></td>";
+				echo "<td><center>".$row['rate']."</center></td>";
+				echo "<td><center>".($row['quantity']*$row['rate'])."</center></td>";
 				
-				echo "<td><center>".$row['ITEMS_ID']."</center></td>";
-				echo "<td><center>".$row['DESCRIPTION']." ".$row['SIZE']."</center></td>";
-				echo "<td><center>".$row['QUANTITY']."</center></td>";
-				echo "<td><center>".$row['RATE']."</center></td>";
-				echo "<td><center>".($row['QUANTITY']*$row['RATE'])."</center></td>";
-				echo "<td><center>".$row['B_RATE']."</center></td>";
-				echo "<td><center>".($row['QUANTITY']*$row['B_RATE'])."</center></td>";
 				
 				echo "</tr>";
 					}
 				}
 				
-				$sql = "SELECT SUM(BI.QUANTITY) AS TOTAL_QUANTITY,SUM(BI.QUANTITY*BI.B_RATE) AS TOTAL_BAMOUNT FROM Items_TBL I, bill_ITEMS_tbl bI where BI.ITEMS_ID=I.ITEMS_ID AND BI.bill_id=".$_GET["bill_id"];
+				$sql = "SELECT 
+							SUM(bi.QUANTITY) AS TOTAL_QUANTITY,
+							SUM(bi.QUANTITY*bi.RATE) AS TOTAL_AMOUNT 
+							FROM bill_items_tbl bi 
+							where bi.bill_id=".$_GET["bill_id"];
 				
 				$result = mysqli_query($dbhandle,$sql);
 				$row = mysqli_fetch_array($result);
 				$total_quantity =$row['TOTAL_QUANTITY'];
-				$total_b_amount = $row['TOTAL_BAMOUNT'];
+				$total_b_amount = $row['TOTAL_AMOUNT'];
 				
 				 
 				?>
@@ -675,20 +731,41 @@
 			<td><button type="button" class="delete-row">Delete Row</button></td>
 			<td><center><label id="totalquantitylabel" value="<?=$total_quantity;?>"><?=$total_quantity;?></label></center></td>
 			<td><center><label id="totalamountlabel" value="<?=$total_amount;?>"> ₹<?=$total_amount;?></center></td>
-			<td><center><label id="totalbamountlabel" value="<?=$total_b_amount;?>"> ₹<?=$total_b_amount;?></center></td>
 			</tr>
 			</table>
+		
+		
+		
 		<table>
-		<tr><th width="20%">ITEM ID</th><th width="20%">Description</th><th width="20%">Quantity</th><th width="20%">Rate</th><th width="20%">BRate</th></tr>
+		<tr><th>BRAND</th><th>STYLE</th><th>SIZE</th><th>QUANTITY</th><th>Rate</th></tr>
 		<tr>
 		
-		<td ><center><input type="number" id="item_id" name="item_id" class="itemdetailbox"></center></td>
-		<td><center><input type="text" id="description" name="description" ></center></td>
+		
+		<td><center>
+			<select id="brand" style="width:120px;">
+			<!-- Dropdown List Option -->
+			</select></center></td>
+
+		<td><center>
+			<select id="item_style" style="width:150px;">
+			<!-- Dropdown List Option -->
+			</select></center></td>
+
+		<td><center>
+			<select id="size" style="width:100px;">
+			<!-- Dropdown List Option -->
+			</select></center></td>
+
+
     	<td><center><input type="number" id="quantity" name="quantity" ></center></td>
 		<td><center><input type="number" id="rate" name="rate" ></center></td>
-		<td><center><input type="number" id="brate" name="brate" ></center></td>
-		</tr>
+		<td ><center><input type="number" id="item_id" name="item_id" class="itemdetailbox" readonly hidden></center></td>
+
 		</table>
+		
+	
+	
+	
 		</br>
 		<p id="item_availability">Available Quantity.</p>
 		
@@ -696,6 +773,11 @@
 		<left><button type="button" class="generateBill" id="updateitemsbutton">update Items</button></left>
 	
 		
+
+
+
+
+
 		
 				
 		</div>

@@ -30,7 +30,7 @@
      }
   }
   else if($action=="updateTransportDetails"){
-	  
+	$relative_path="data/$nitinTraders/invoice/LR/";
 	$status=0;
 	$location="";	
 	
@@ -38,8 +38,13 @@
 		
 				$filename = $_FILES['img_file']['name'];
 				$filename = $_POST['bill_id'].".jpg";
+				
+				if(!file_exists($_SERVER["DOCUMENT_ROOT"]."/".$relative_path))
+					mkdir($_SERVER["DOCUMENT_ROOT"]."/".$relative_path,755,true);
 
-				$location = "LR/".$filename;
+
+
+				$location = $_SERVER["DOCUMENT_ROOT"]."/".$relative_path.$filename;
 				$uploadOk = 1;
 				$imageFileType = pathinfo($location,PATHINFO_EXTENSION);
 
@@ -62,7 +67,7 @@
 							}
 	
 	
-		}
+					}
 	
 	
 	
@@ -75,7 +80,7 @@
 	$LR_EWAY=$_POST['LR_EWAY'];
 	
 	if (strcmp($location, "") !== 0)
-	$query_upload="update transport_tbl set LR_LOC='$location',date='".$LR_DATE."' ,lr=".$LR.",EWAY=".$LR_EWAY.",transport_name='".$LR_TRANSPORT."',transport_parcels=".$LR_PARCELS." where bill_id=".$bill_id.";";
+	$query_upload="update transport_tbl set LR_LOC='".$relative_path.$filename."',date='".$LR_DATE."' ,lr=".$LR.",EWAY=".$LR_EWAY.",transport_name='".$LR_TRANSPORT."',transport_parcels=".$LR_PARCELS." where bill_id=".$bill_id.";";
 	else
 	$query_upload="update transport_tbl set date='".$LR_DATE."' ,EWAY=".$LR_EWAY.",transport_name='".$LR_TRANSPORT."',transport_parcels=".$LR_PARCELS." where bill_id=".$bill_id.";";
 	

@@ -81,8 +81,7 @@
                         url:"CustomerStatementAction.php",
                         data:"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date+"&action=listCustomerStatement",
                         success:function(data){
-						alert(data);
-						$("#listBills").show();
+						            $("#listBills").show();
 						
 						
 						var bills_list = JSON.parse(data);
@@ -91,23 +90,25 @@
 							
 							if(bill["BILL AMOUNT"]==null)
 								bill["BILL AMOUNT"]=0;
-							if(bill["PAYMENT AMOUNT"]==null){
+							if(bill["PAYMENT AMOUNT"]==null)
 								bill["PAYMENT AMOUNT"]="0";
 								
-							}
+							bill["BILL AMOUNT"]=Math.round(Number(bill["BILL AMOUNT"]));
 							
 							
 									if(i<1){
 										var markup= "<tr><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>-</center></td><td><center>"+bill["BILL AMOUNT"]+"</center></td></tr>";
 									$("#bills_tbl").append(markup);
-									balance=balance+Number(bill["BILL AMOUNT"]*1.05)- Number(bill["PAYMENT AMOUNT"]);
+									balance=balance+Number(bill["BILL AMOUNT"])- Number(bill["PAYMENT AMOUNT"]);
+                  //balance = Math.round(balance);
 									i++;
 									}else{
-										balance=balance+Number(bill["BILL AMOUNT"]*1.05)- Number(bill["PAYMENT AMOUNT"]);
+										balance=balance+Number(bill["BILL AMOUNT"])- Number(bill["PAYMENT AMOUNT"]);
+                    //balance=Math.round(balance);
 												if(bill["PAYMENT AMOUNT"]==0){
 												bill["PAYMENT AMOUNT"]="-";
 												bill["PAYMENT DESCRIPTION"]="-";
-												var markup= "<tr><td><center><a href='/"+server_root+"/invoice/showInvoice.php?bill_id="+bill["BILL ID"]+"'>"+bill["BILL ID"]+"</a></center></td><td><center>"+bill["DATE"]+"</center></td><td><center>"+bill["transport_name"]+"</center></td><td><center><a href='/"+server_root+"/invoice/"+bill["LR_LOC"]+"'>"+bill["LR"]+"</a></center></td><td><center>"+bill["t_date"]+"</center></td><td><center>"+bill["transport_parcels"]+"</center></td><td><center>"+bill["ITEM_QUANTITY"]+"</center></td><td><center>"+bill["ITEM_RATE"]+"</center></td><td><center>"+(bill["PAYMENT DESCRIPTION"])+"</center></td><td><center>"+(bill["BILL AMOUNT"]*1.05)+"</center></td><td><center>"+bill["PAYMENT AMOUNT"]+"</center></td><td><center>"+balance+"</center></td></tr>";
+												var markup= "<tr><td><center><a href='/"+server_root+"/invoice/showInvoice.php?bill_id="+bill["BILL ID"]+"'>"+bill["BILL ID"]+"</a></center></td><td><center>"+bill["DATE"]+"</center></td><td><center>"+bill["transport_name"]+"</center></td><td><center><a href='/"+server_root+"/invoice/"+bill["LR_LOC"]+"'>"+bill["LR"]+"</a></center></td><td><center>"+bill["t_date"]+"</center></td><td><center>"+bill["transport_parcels"]+"</center></td><td><center>"+bill["ITEM_QUANTITY"]+"</center></td><td><center>"+bill["ITEM_RATE"]+"</center></td><td><center>"+(bill["PAYMENT DESCRIPTION"])+"</center></td><td><center>"+(bill["BILL AMOUNT"])+"</center></td><td><center>"+bill["PAYMENT AMOUNT"]+"</center></td><td><center>"+balance+"</center></td></tr>";
 												}else{
 													bill["BILL ID"]="-";
 													bill["transport_name"]="-";

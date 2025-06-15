@@ -42,9 +42,8 @@ body {
 			<li class="pushy-submenu">
                 <button>Items</button>
                 <ul>
-					<li class="pushy-link"><a href="/<?=$nitinTraders?>/items/addItem.php">Items Add</a></li>
-					<li class="pushy-link"><a href="/<?=$nitinTraders?>/items/listItems.php">Items List</a></li>
-					<li class="pushy-link"><a href="/<?=$nitinTraders?>/items/ItemHistory.php">Items History</a></li>
+					<li class="pushy-link"><a href="/<?=$stockManager?>/items/listGeneralizedItems.php">Items List</a></li>
+					<li class="pushy-link"><a href="/<?=$stockManager?>/items/listReceivedLogger.php">Received Logger</a></li>
 					
 				</ul>
             </li>

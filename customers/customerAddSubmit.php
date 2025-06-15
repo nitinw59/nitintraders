@@ -27,8 +27,7 @@
 	
 	
 
-	$selected = mysqli_select_db($dbhandle,$dbname) 
-  or die("Could not select database1");
+	
 
 	$status=mysqli_query($dbhandle,$query_upload) ; 
 	

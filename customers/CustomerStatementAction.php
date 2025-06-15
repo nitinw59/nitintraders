@@ -10,7 +10,7 @@
 	$company_name=$_POST["company_name"];
 	$from_date=$_POST["from_date"];
 	$to_date=$_POST["to_date"];
-	  $sqlquery="select SUM(B.TOTAL_AMOUNT+T.CGST+T.SGST+T.IGST) AS TOTALAMOUNT FROM bills_tbl B, tax_details_tbl T, customers_tbl C WHERE B.BILL_ID=T.BILL_ID AND B.customer_id=C.customer_id AND C.COMPANY_NAME='".$company_name."'  AND b.DATE<'".$from_date."' order by  b.BILL_ID desc";
+	$sqlquery="select SUM(B.TOTAL_AMOUNT+T.CGST+T.SGST+T.IGST) AS TOTALAMOUNT FROM bills_tbl B, tax_details_tbl T, customers_tbl C WHERE B.BILL_ID=T.BILL_ID AND B.customer_id=C.customer_id AND C.COMPANY_NAME='".$company_name."'  AND B.DATE<'".$from_date."' order by  B.BILL_ID desc";
     //$sqlquery="select SUM(B.TOTAL_AMOUNT) AS TOTALAMOUNT FROM bills_tbl B,  customers_tbl C WHERE B.customer_id=C.customer_id AND C.COMPANY_NAME='".$company_name."'  AND b.DATE<'".$from_date."' order by  b.BILL_ID desc";
     $show=mysqli_query($dbhandle,$sqlquery);
 	$row=mysqli_fetch_array($show);
@@ -37,31 +37,32 @@
 	
 	$old_balance=$old_bill_amount-$old_payment;
 	
+	
+	
 	$sqlquery="select 
-			B.BILL_ID as 'BILL ID',
-			B.DATE as 'DATE',
-			(select GROUP_CONCAT(bi.quantity) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'ITEM_QUANTITY'  ,
-			(select GROUP_CONCAT(bi.rate) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'ITEM_RATE'  ,
-			(B.TOTAL_AMOUNT) AS 'BILL AMOUNT',
+			b.BILL_ID as 'BILL ID',
+			b.DATE as 'DATE',
+			(b.TOTAL_AMOUNT+t.CGST+t.SGST+t.IGST) AS 'BILL AMOUNT',
+			(select GROUP_CONCAT(bi.quantity) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'QUANTITY'  ,
+			(select GROUP_CONCAT(bi.rate) from bill_items_tbl bi where bi.BILL_ID=b.BILL_ID) as 'RATE'  ,
 			DATE_FORMAT(tr.DATE, '%d/%m/%Y') as t_date,		
 			tr.LR as LR,
-			LR_LOC as LR_LOC,
 			tr.transport_name as transport_name,
 			tr.transport_parcels as transport_parcels,
 			0 as 'PAYMENT AMOUNT',	
 			0 as 'PAYMENT DESCRIPTION'
 
-			FROM bills_tbl B,
+			FROM bills_tbl b,
 			transport_tbl tr,
-			
-			customers_tbl C 
+			tax_details_tbl t,
+			customers_tbl c 
 			
 			WHERE 
 
-			B.BILL_ID=tr.BILL_ID AND
- 
-			B.customer_id=C.customer_id AND
-			C.COMPANY_NAME='$company_name' AND
+			b.BILL_ID=tr.BILL_ID AND
+			t.BILL_ID=b.BILL_ID AND
+			b.customer_id=c.customer_id AND
+			c.COMPANY_NAME='$company_name' AND
 			b.DATE>='$from_date' AND b.DATE<='$to_date' 
     
 
@@ -73,12 +74,11 @@
 
 			0 as 'BILL ID',
 			c.date AS 'DATE',
-			0 as 'ITEM_QUANTITY',
-			0 as 'ITEM_RATE',
 			0 as 'BILL AMOUNT',
+			'' as QUANTITY,
+			'' as RATE,
 			'' as t_date,
 			'' as LR,
-			'' as LR_LOC,
 			'' as transport_name,
 			0 as transport_parcels,
 			c.amount as 'PAYMENT AMOUNT',
@@ -86,7 +86,7 @@
  
  
 			FROM credits_tbl c,
-			customers_tbl Cr 
+			customers_tbl cr 
 
 			WHERE
 			cr.customer_id=c.customer_id 
@@ -95,10 +95,11 @@
 			AND c.DATE<='$to_date'
 			
 			order by date asc";
-		
-		
 			
-		
+	
+
+
+
 	$show=mysqli_query($dbhandle,$sqlquery);
 	
 	$bills_list;
@@ -141,8 +142,8 @@
 		$bill['transport_parcels']=$row['transport_parcels'];
 		$bill['PAYMENT AMOUNT']=$row['PAYMENT AMOUNT'];
 		$bill['PAYMENT DESCRIPTION']=$row['PAYMENT DESCRIPTION'];
-		$bill['ITEM_QUANTITY']=$row['ITEM_QUANTITY'];
-		$bill['ITEM_RATE']=$row['ITEM_RATE'];
+		$bill['ITEM_QUANTITY']=$row['QUANTITY'];
+		$bill['ITEM_RATE']=$row['RATE'];
 		
 		
 		$bills_list[$row_count]=$bill;

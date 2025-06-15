@@ -23,6 +23,31 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     </head>
 
+
+  <script>
+		$(document).ready(function(){
+			$(".archiveCustomer").click(function(){
+			window.location.replace("archiveCustomer.php?bill_id="+$(this).val());
+
+
+		});
+
+
+
+        $(".updateCustomer").click(function(){
+			window.location.replace("updateCustomer.php?COMPANY_NAME="+$(this).val());
+
+
+		});
+
+
+
+		});
+  </script>
+
+
+
+
 <style>
 
 .updateCustomer {
@@ -246,7 +271,7 @@ if($result = mysqli_query($dbhandle,$sql)){
                 echo "<td><center><label>" . $row['EMAIL'] . "</label></center></td>";
               
 				
-                echo "<td><center><label><button type='submit' class='updateCustomer' value=".$row['customer_id'].">Update</button></label></center></td>";
+                echo "<td><center><label><button type='submit' class='updateCustomer' value='".$row['COMPANY_NAME']."'>Update</button></label></center></td>";
 				
 
             echo "</tr>";
