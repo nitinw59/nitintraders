@@ -63,10 +63,10 @@ body {
 			<li class="pushy-submenu">
                 <button>Payments</button>
                 <ul>
-					<li class="pushy-link"><a href="/<?=$nitinTraders?>/payments/newCredits.php">newCredits </a></li>
-					<li class="pushy-link"><a href="/<?=$nitinTraders?>/fabric/payments/newCredits.php">New Debit </a></li>
-					<li class="pushy-link"><a href="/<?=$nitinTraders?>/payments/listPayment.php">List credits </a></li>
-					<li class="pushy-link"><a href="/<?=$nitinTraders?>/payments/listDebits.php">List Debits</a></li>
+					<li class="pushy-link"><a href="/<?=$nitinTraders?>/payments/credits/newCredits.php">New Credits </a></li>
+					<li class="pushy-link"><a href="/<?=$nitinTraders?>/payments/credits/listCredits.php">List credits </a></li>
+					<li class="pushy-link"><a href="/<?=$nitinTraders?>/payments/debits/newDebits.php">New Debit </a></li>
+					<li class="pushy-link"><a href="/<?=$nitinTraders?>/payments/debits/listDebits.php">List Debits</a></li>
 					
 					</ul>
             </li>
@@ -80,7 +80,7 @@ body {
 					<li class="pushy-link"><a href="/<?=$nitinTraders?>/fabric/merchants/MerchantList.php">List Supplier </a></li>
 					</ul>
             </li>
-			<li class="pushy-submenu">
+			<!-- <li class="pushy-submenu">
                 <button>Cash Ledger</button>
                 <ul>
 					<li class="pushy-link"><a href="/<?=$nitinTraders?>/cashLegder/newCashTransaction.php">New Cash </a></li>
@@ -100,7 +100,7 @@ body {
 					<li class="pushy-link"><a href="/<?=$nitinTraders?>/report/monthpurchase.php">Purchase Report </a></li>
 					
 				</ul>
-            </li>
+            </li> -->
 			
             
         </ul>

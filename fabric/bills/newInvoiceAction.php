@@ -10,7 +10,6 @@
 	$status=0;
 		if(!file_exists($_SERVER["DOCUMENT_ROOT"]."/".$relative_path)){
 			mkdir($_SERVER["DOCUMENT_ROOT"]."/".$relative_path,755,true);
-			echo "hello";
 			}
 	
 		if(isset($_FILES['img_file']['name'])){

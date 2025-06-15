@@ -1,11 +1,14 @@
+
+<html>
+
 <?php
+	
 	include($_SERVER['DOCUMENT_ROOT']."/htaccess.php");
 	
 	include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/mysqlconnectdb.php");
 	include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/var.php");
 	include($_SERVER['DOCUMENT_ROOT']."/$nitinTraders/index.php");
-	
-	
+			
 	$sql = "SELECT COMPANY_NAME FROM fabric_merchants_tbl";
 	$customercompanynames = array();
 	if($result = mysqli_query($dbhandle,$sql) ){
@@ -23,6 +26,11 @@
 	
 	
 	?>
+	
+	
+	
+	
+
 
   <head>
         <meta charset="utf-8">
@@ -46,69 +54,37 @@
 			
 	<script type="text/javascript">
 	
-	
-	
-			$(document).ready(function() {
-				
-				
 
-				var buyernameArray = <?php echo json_encode($customercompanynames); ?>;
+		$(document).ready(function() {
+				
+			var buyernameArray = <?php echo json_encode($customercompanynames); ?>;
 				$("#buyername").select2({
 				  data: buyernameArray
 				});
 				
-				
-				
-				
-
-				
-				
-				
-				
-				
-				
-				$("#buyername").change(function(){
+				$("#showPayments").click(function(){
 					
-                     var customercompanyname=$("#buyername").val();
-						$("#paymentdetail").show();
 					
-					  $.ajax({
-                        type:"post",
-                        url:"newCreditsAction.php",
-                        data:"customercompanyname="+customercompanyname+"&action=fetchcustomerdetail",
-                        success:function(data){
-							
-							customerdetails = JSON.parse(data);
-							
-                        }
-                     });
-				
-				
-				});
-
-				
-				
-				
-				
-				$("#makepayment").click(function(){
+					var company_name=$("#buyername").val();
+					var from_date=$("#from_date").val();
+					var to_date=$("#to_date").val();
 					
-					var paymentdate=$("#paymentdate").val();
-					var amount=$("#amount_payment").val();
-					var remark=$("#remark_amount").val();
 					
 					
 					$.ajax({
                         type:"post",
-                        url:"newCreditsAction.php",
-                        data:"customer_id="+customerdetails["FABRIC_MERCHANTS_ID"]+"&date="+paymentdate+"&amount="+amount+"&remark="+remark+"&action=addDebits",
+                        url:"listDebitsAction.php",
+                        data:"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date+"&action=listPayment",
                         success:function(data){
 						
-						if(data==1){
-							alert("Debit(s) Made Successfuly.\n Supplier="+customerdetails["COMPANY_NAME"]+"\ndate="+paymentdate+"\namount="+amount+"\nremark="+remark);
-							location.reload();
-						}else{
-							alert("Payment Failed.");
-						}
+						$("#paymentdetail").show();
+						var payments_list = JSON.parse(data);
+						$.each(payments_list, function( index, payment ) {
+							var markup= "<tr id='"+payment["debit_id"]+"'><td><center>"+payment["date"]+"</center></td><td><center>"+payment["amount"]+"</center></td><td><center>"+payment["DESCRIPTION"]+"</center></td><td><center><button class='delete' value='"+payment["debit_id"]+"'>delete</button></center></td></tr>"
+							
+							
+							$("#payments_tbl").append(markup);
+						});
 										
                         }
                     });
@@ -116,7 +92,58 @@
 				});
 				
 				
-
+				$('#payments_tbl').on('click', '.print', function(){
+				
+					var company_name=$("#buyername").val();
+					var from_date=$("#from_date").val();
+					var to_date=$("#to_date").val();
+					
+					
+				
+				window.open("printListPayment.php?"+"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date);
+				
+				});
+				
+				
+				
+				$('#payments_tbl').on('click', '.delete', function(){
+				if (confirm("You really want to delete? ask nitin!")){
+					var debit_id=$(this).val();
+						$.ajax({
+                        type:"post",
+                        url:"listDebitsAction.php",
+                        data:"debit_id="+debit_id+"&action=deletePayment",
+                        success:function(data)
+						{
+							
+							try{
+								
+							if(Number(data)==1){
+							$('#'+debit_id).remove();	
+							alert ("Deleted Successfuly.");
+							
+							}else{
+								
+							alert("Failed To Delete");
+							}
+							}catch(e){
+							$("#item_availability").html("call nitin: Item not available");
+							
+							}
+										
+                        }
+                    });
+					
+				
+				}
+				
+				
+				
+				});
+				
+				
+				
+				
 				
 				
 				
@@ -125,54 +152,57 @@
 	
 	
 	</head>
-
-
+	
+	
 
     <body>
 	
 	<?php
     
-$current_date=date('Y-m-d', time());
+		
+		$current_date=date('2017-07-01', time());
+		$current_due_date=date('Y-m-t', time());
+	
 	?>
-    <h3>NEW DEBIT</h3>
+    <center><h3>List Debits</h3></center>
 	<div class="buyerdetailst" id="buyerdetailst">
 	
-	
+	<table><tr>
+	<td>
 	<select id="buyername" style="width:300px;">
 			<!-- Dropdown List Option -->
 	</select>
+	</td>
+	<td>
+	From Date: <input type="date" id="from_date" value="<?=$current_date?>" >
+	</td>
+	<td>
+	To Date: <input type="date" id="to_date" value="<?=$current_due_date?>">
+	</td>
+	</tr>
+	<tr>
+	<td></td><td></td>
+	<td >
+	<button id="showPayments">Show</button>
 	
-	
-	
-	
-	<select id="buyerbills"  style="display:none;">
-			<!-- Dropdown List Option -->
-	</select>
-	
+	</td>
+	</tr>
+	</table>
 	</div>
     <div class="paymentdetail" id="paymentdetail" style="display:none;">
 	
+	<table id="payments_tbl">
+	<tr><th>DATE </th><th>AMOUNT </th><th>Remark </th><th>Bill Id </th></tr>
 	
-	DATE 
+	</table>
 	
-	<input type="date" id="paymentdate" placeholder="dd-mm-yyyy"  value="<?=$current_date?>"  >
+	</div>	
 	
-	AMOUNT <input type="number" id="amount_payment" name="amount_payment" >
-	Remark <input type="text" id="remark_amount" name="remark_amount" >
 	
-	<div align="center">
-	<button id="makepayment">Make Payment</button>
-	</div>
-	
-	</div>
-	
-		
 	<script src="/<?=$nitinTraders?>/js/pushy.min.js"></script>
-		
+	
+	
     </body>
-	
-	
-	
 	
 	<style>
 	*, *:before, *:after {
@@ -186,15 +216,15 @@ body {
   color: #384047;
 }
 
-.paymentdetail {
-  max-width: 450px;
+form {
+  max-width: 300px;
   margin: 10px auto;
   padding: 10px 20px;
   background: #f4f7f8;
   border-radius: 8px;
 }
 
-.companydetails {
+.paymentdetail {
   max-width: 800px;
   margin: 10px auto;
   padding: 10px 20px;
@@ -215,14 +245,14 @@ padding:3px 3px 3px 3px;
 
 
 .buyerdetails {
-  max-width: 450px;
+  max-width: 800px;
   margin: 10px auto;
   padding: 10px 20px;
   background: #e8e8df;
   border-radius: 8px;
 }
 .buyerdetailst {
-  max-width: 450px;
+  max-width: 800px;
   margin: 10px auto;
   padding: 10px 20px;
   background: #e8e8df;
@@ -236,7 +266,7 @@ padding:3px 3px 3px 3px;
   border-radius: 8px;
 }
 
-.paymentdetaildiv{
+.TaxDetail{
 	 max-width: 800px;
 	margin: 10px auto;
 	padding: 10px 20px;
@@ -251,31 +281,6 @@ h1 {
   text-align: center;
 }
 
-input[type="text"],
-input[type="password"],
-input[type="date"],
-input[type="datetime"],
-input[type="email"],
-input[type="number"],
-input[type="search"],
-input[type="tel"],
-input[type="time"],
-input[type="url"],
-textarea,
-select {
-  background: rgba(255,255,255,0.1);
-  border: none;
-  font-size: 16px;
-  height: auto;
-  margin: 0;
-  outline: 0;
-  padding: 15px;
-  width: 100%;
-  background-color: #e8eeef;
-  color: #8a97a0;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
-  margin-bottom: 30px;
-}
 
 input[type="radio"],
 input[type="checkbox"] {
@@ -288,60 +293,21 @@ select {
   border-radius: 2px;
 }
 
-#makepayment {
-  background: #3498db;
-  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
-  background-image: -moz-linear-gradient(top, #3498db, #2980b9);
-  background-image: -ms-linear-gradient(top, #3498db, #2980b9);
-  background-image: -o-linear-gradient(top, #3498db, #2980b9);
-  background-image: linear-gradient(to bottom, #3498db, #2980b9);
-  -webkit-border-radius: 28;
-  -moz-border-radius: 28;
-  border-radius: 28px;
-  font-family: Arial;
-  color: #ffffff;
-  font-size: 20px;
-  padding: 10px 20px 10px 20px;
-  text-decoration: none;
+button {
+  
+  color: #FFF;
+  background-color: #4bc970;
+  font-size: 18px;
+  text-align: center;
+  font-style: normal;
+  border-radius: 5px;
+  width: 30%;
+  border: 1px solid #3ac162;
+  border-width: 1px 1px 3px;
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.1) inset;
+  margin-bottom: 10px;
 }
 
-#makepayment:hover {
-  background: #3cb0fd;
-  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
-  text-decoration: none;
-}
-
-
-#addpayment {
-  background: #3498db;
-  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
-  background-image: -moz-linear-gradient(top, #3498db, #2980b9);
-  background-image: -ms-linear-gradient(top, #3498db, #2980b9);
-  background-image: -o-linear-gradient(top, #3498db, #2980b9);
-  background-image: linear-gradient(to bottom, #3498db, #2980b9);
-  -webkit-border-radius: 28;
-  -moz-border-radius: 28;
-  border-radius: 28px;
-  font-family: Arial;
-  color: #ffffff;
-  font-size: 20px;
-  padding: 10px 20px 10px 20px;
-  text-decoration: none;
-}
-
-#addpayment:hover {
-  background: #3cb0fd;
-  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
-  text-decoration: none;
-}
 fieldset {
   margin-bottom: 30px;
   border: none;
@@ -406,7 +372,4 @@ tr:nth-child(even){background-color: #f2f2f2}
 
 	</style>
 </html>
-
-
-
 

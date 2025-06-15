@@ -73,7 +73,6 @@
                         url:"SupplierStatementAction.php",
                         data:"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date+"&action=listSupplierStatement",
                         success:function(data){
-						alert(data);
 						var counter=0;
 						var credits=0;
 						var old_balance=0;

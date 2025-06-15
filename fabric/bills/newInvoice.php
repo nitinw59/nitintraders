@@ -224,7 +224,6 @@
 						contentType: false,
 						processData: false,
 						success:function(data){
-						alert(data);
 						if(Number(data)==1){
 							alert("Bill Added Successfuly.");
 							location.reload();

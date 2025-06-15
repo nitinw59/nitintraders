@@ -67,14 +67,14 @@
 					
 					$.ajax({
                         type:"post",
-                        url:"listPaymentAction.php",
+                        url:"listCreditsAction.php",
                         data:"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date+"&action=listPayment",
                         success:function(data){
 							
 						$("#paymentdetail").show();
 						var payments_list = JSON.parse(data);
 						$.each(payments_list, function( index, payment ) {
-							var markup= "<tr><td><center>"+payment["date"]+"</center></td><td><center>"+payment["amount"]+"</center></td><td><center>"+payment["DESCRIPTION"]+"</center></td><td><center><button class='delete' value='"+payment["credits_id"]+"'>delete</button></center></td></tr>"
+							var markup= "<tr id='"+payment["credits_id"]+"'><td><center>"+payment["date"]+"</center></td><td><center>"+payment["amount"]+"</center></td><td><center>"+payment["DESCRIPTION"]+"</center></td><td><center><button class='delete' value='"+payment["credits_id"]+"'>delete</button></center></td></tr>"
 														
 							$("#payments_tbl").append(markup);
 						});
@@ -90,13 +90,14 @@
 					
 						$.ajax({
                         type:"post",
-                        url:"listPaymentAction.php",
+                        url:"listCreditsAction.php",
                         data:"credits_id="+credits_id+"&action=deletePayment",
                         success:function(data){
 							
 							try{
 								
 							if(Number(data)==1){
+							$("#"+credits_id).remove();
 							alert ("Deleted Successfuly.");
 							
 							}else{
@@ -128,7 +129,7 @@
 					
 					
 				
-				window.open("printListPayment.php?"+"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date);
+				window.open("printListCredits.php?"+"company_name="+company_name+"&from_date="+from_date+"&to_date="+to_date);
 				
 				});
 				

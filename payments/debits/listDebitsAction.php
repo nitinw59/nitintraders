@@ -62,10 +62,10 @@
   } else if($action=="deletePayment"){
 	 $debit_id=$_POST["debit_id"];
 	 
-	 $sqlquery="DELETE FROM debits_tbl WHERE  debit_id=".$debit_id ;
-     $show=mysqli_query($dbhandle,$sqlquery);
+	$sqlquery="DELETE FROM debits_tbl WHERE  debit_id=".$debit_id ;
+	$show=mysqli_query($dbhandle,$sqlquery);
  
-    echo $sqlquery;
+    echo $show;
   }
   
 ?>
